@@ -12,7 +12,6 @@ const PORT = process.env.PORT || 3000;
 const DOWNLOADS_DIR = path.join(__dirname, '..', 'downloads');
 const FFMPEG_PATH = ffmpegInstaller.path;
 
-// Garantir que a pasta downloads existe
 if (!fs.existsSync(DOWNLOADS_DIR)) {
   fs.mkdirSync(DOWNLOADS_DIR, { recursive: true });
 }
@@ -21,7 +20,7 @@ app.use(express.json());
 
 app.get('/', (req: Request, res: Response) => {
   res.json({
-    message: 'YouTube Music Download API',
+    message: 'YTune API - YouTube Music Download Service',
     version: '1.0.0',
     status: 'running',
     endpoints: {

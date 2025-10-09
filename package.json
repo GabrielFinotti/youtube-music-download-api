@@ -1,10 +1,11 @@
 {
-  "name": "youtube-music-download-api",
+  "name": "ytune-api",
   "version": "1.0.0",
-  "description": "Api para download de musícas do youtube",
+  "description": "YTune API - Uma API moderna para download de músicas do YouTube",
   "main": "dist/server.cjs",
+  "type": "commonjs",
   "scripts": {
-    "build": "tsup src/server.ts --format cjs --dts",
+    "build": "tsup src/server.ts --format cjs --dts --clean",
     "start": "node dist/server.cjs",
     "dev": "tsx watch src/server.ts",
     "test": "jest",

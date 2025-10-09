@@ -1,10 +1,10 @@
-# youtube-music-download-api
+# YTune API
 
-API para download de músicas do YouTube
+🎵 Uma API moderna para download de músicas do YouTube
 
 ## 📋 Descrição
 
-API REST desenvolvida em Node.js com TypeScript para download de músicas do YouTube e conversão para formato MP3.
+YTune API é uma API REST desenvolvida em Node.js com TypeScript para download de músicas do YouTube e conversão para formato MP3 de alta qualidade.
 
 ## 🚀 Tecnologias
 

@@ -1,6 +1,6 @@
 {
   "name": "ytune-api",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "YTune API - Uma API moderna para download de músicas do YouTube",
   "main": "dist/server.js",
   "type": "commonjs",
@@ -12,7 +12,12 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "format": "prettier --write \"src/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\""
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "docker:rebuild": "docker compose down && docker compose build --no-cache && docker compose up -d"
   },
   "keywords": [
     "youtube",

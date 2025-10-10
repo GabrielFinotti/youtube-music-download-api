@@ -4,7 +4,7 @@
 
 ### API REST moderna para download de músicas do YouTube
 
-[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/GabrielFinotti/youtube-music-download-api)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/GabrielFinotti/youtube-music-download-api)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
 [![Node](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
@@ -12,6 +12,7 @@
 
 [Características](#-características) •
 [Instalação](#-instalação) •
+[Docker](#-docker) •
 [API](#-api) •
 [Exemplos](#-exemplos) •
 [Testes](#-testes) •
@@ -143,6 +144,129 @@ O servidor estará rodando em `http://localhost:3000` 🚀
 
 ---
 
+## 🐳 Docker
+
+A aplicação possui suporte completo para Docker, incluindo multi-stage builds, otimizações de segurança e health checks.
+
+### 🚢 Construir e Executar com Docker Compose
+
+A forma mais simples de executar a aplicação é usando Docker Compose:
+
+```bash
+# Construir a imagem
+npm run docker:build
+
+# Iniciar o container
+npm run docker:up
+
+# Ver logs
+npm run docker:logs
+
+# Parar o container
+npm run docker:down
+
+# Reconstruir do zero (sem cache)
+npm run docker:rebuild
+```
+
+### 📦 Docker Manual
+
+**Construir a imagem:**
+
+```bash
+docker build -t ytune-api:latest .
+```
+
+**Executar o container:**
+
+```bash
+docker run -d \
+  --name ytune-api \
+  -p 3000:3000 \
+  -e NODE_ENV=production \
+  -e PORT=3000 \
+  -e CORS=* \
+  -e VERSION=v1 \
+  -e SECRET_KEY=your-secret-key \
+  ytune-api:latest
+```
+
+**Verificar logs:**
+
+```bash
+docker logs -f ytune-api
+```
+
+**Parar e remover:**
+
+```bash
+docker stop ytune-api
+docker rm ytune-api
+```
+
+### 🔒 Características de Segurança do Docker
+
+- ✅ **Multi-stage builds** - Imagem final otimizada e menor
+- ✅ **Usuário não-root** - Execução com usuário `nodejs` (UID 1001)
+- ✅ **Capabilities mínimas** - Apenas permissões essenciais
+- ✅ **Health checks** - Monitoramento automático de saúde
+- ✅ **Security options** - `no-new-privileges:true`
+- ✅ **Imagem Alpine** - Base mínima e segura
+
+### 📊 Detalhes da Imagem Docker
+
+| Característica | Valor |
+|----------------|-------|
+| **Imagem Base** | `node:20-alpine` |
+| **Tamanho Final** | ~200MB |
+| **Porta Exposta** | 3000 |
+| **Health Check** | A cada 30s |
+| **Usuário** | `nodejs` (non-root) |
+
+### 🔍 Health Check
+
+O container possui um health check integrado que verifica o endpoint `/api/v1/health`:
+
+```yaml
+healthcheck:
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s
+```
+
+**Verificar status:**
+
+```bash
+docker inspect --format='{{.State.Health.Status}}' ytune-api
+```
+
+### 🌐 Docker Compose com Rede Externa
+
+O `docker-compose.yml` está configurado para usar uma rede externa chamada `proxy_net`. Isso permite integração com reverse proxies como Traefik ou Nginx.
+
+**Criar a rede (se ainda não existir):**
+
+```bash
+docker network create proxy_net
+```
+
+### 📝 Variáveis de Ambiente no Docker
+
+Crie um arquivo `.env` na raiz do projeto:
+
+```env
+NODE_ENV=production
+PORT=3000
+CORS=*
+VERSION=v1
+SECRET_KEY=your-secret-key-here
+```
+
+O Docker Compose lerá automaticamente essas variáveis.
+
+---
+
 ## 🎯 Scripts Disponíveis
 
 ```bash
@@ -163,6 +287,13 @@ npm run test:coverage    # Executa testes com relatório de cobertura
 # ✨ Formatação
 npm run format           # Formata código com Prettier
 npm run format:check     # Verifica formatação do código
+
+# 🐳 Docker
+npm run docker:build     # Constrói a imagem Docker
+npm run docker:up        # Inicia o container em background
+npm run docker:down      # Para e remove o container
+npm run docker:logs      # Exibe logs do container
+npm run docker:rebuild   # Reconstrói do zero (sem cache)
 ```
 
 ---
@@ -719,14 +850,14 @@ finally {
 
 ### Próximas Versões
 
-#### v1.1.0 (Planejado)
+#### v1.3.0 (Planejado)
 
 - [ ] Suporte a playlists do YouTube
 - [ ] Múltiplos formatos de áudio (WAV, FLAC, AAC)
 - [ ] Sistema de fila para downloads
 - [ ] WebSockets para progresso em tempo real
 
-#### v1.2.0 (Planejado)
+#### v1.4.0 (Planejado)
 
 - [ ] Autenticação JWT
 - [ ] Rate limiting por IP
@@ -736,7 +867,6 @@ finally {
 #### v2.0.0 (Futuro)
 
 - [ ] GraphQL API
-- [ ] Docker e Docker Compose
 - [ ] CI/CD com GitHub Actions
 - [ ] Documentação OpenAPI/Swagger
 - [ ] Logs estruturados (Winston)
@@ -748,9 +878,30 @@ finally {
 
 Veja o arquivo [CHANGELOG.md](CHANGELOG.md) para detalhes sobre as mudanças em cada versão.
 
-**Versão Atual:** 1.1.0 (10 de outubro de 2025)
+**Versão Atual:** 1.2.0 (10 de outubro de 2025)
 
-### 🆕 Novidades v1.1.0
+### 🆕 Novidades v1.2.0
+
+- 🐳 **Suporte Docker Completo**: Dockerfile multi-stage otimizado
+  - Build em duas etapas para imagem final menor
+  - Imagem baseada em Alpine Linux (~200MB)
+  - Usuário não-root para segurança
+  - Health checks integrados
+- 🔧 **Docker Compose**: Orquestração simplificada
+  - Configuração pronta para produção
+  - Integração com rede externa (proxy_net)
+  - Suporte a variáveis de ambiente
+  - Security options otimizadas
+- 📦 **Scripts Docker**: Novos comandos npm para gerenciamento
+  - `npm run docker:build` - Construir imagem
+  - `npm run docker:up` - Iniciar container
+  - `npm run docker:down` - Parar container
+  - `npm run docker:logs` - Ver logs
+  - `npm run docker:rebuild` - Reconstruir do zero
+- 📝 **Documentação Docker**: Guia completo de uso do Docker
+- 🔒 **Segurança Aprimorada**: Capabilities mínimas e boas práticas
+
+### Destaques v1.1.0
 
 - ✨ **Headers HTTP Customizados**: Acesso a metadados do áudio via headers
   - `X-Track-Title`: Título original do vídeo

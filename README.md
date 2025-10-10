@@ -4,7 +4,7 @@
 
 ### API REST moderna para download de músicas do YouTube
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/GabrielFinotti/youtube-music-download-api)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/GabrielFinotti/youtube-music-download-api)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
 [![Node](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
@@ -15,6 +15,7 @@
 [API](#-api) •
 [Exemplos](#-exemplos) •
 [Testes](#-testes) •
+[CORS & Headers](docs/CORS_HEADERS.md) •
 [Changelog](#-changelog)
 
 </div>
@@ -29,9 +30,11 @@
 
 - ✅ **Download de Áudio do YouTube** - Extração de áudio de vídeos
 - ✅ **Conversão MP3** - Conversão automática para formato MP3
+- ✅ **Headers Customizados** - Metadados do áudio (título, duração) via HTTP headers
+- ✅ **CORS Configurável** - Headers expostos para acesso cross-origin
 - ✅ **API RESTful** - Endpoints bem definidos e versionados
 - ✅ **TypeScript** - Código totalmente tipado e seguro
-- ✅ **100% Cobertura de Testes** - 67 testes automatizados
+- ✅ **100% Cobertura de Testes** - 68 testes automatizados
 - ✅ **Arquitetura em Camadas** - Controller → Service → Routes
 - ✅ **Respostas Padronizadas** - Formato consistente de resposta
 - ✅ **Validação Robusta** - Validação de URLs e parâmetros
@@ -268,7 +271,18 @@ Faz o download de áudio de um vídeo do YouTube e retorna o buffer do arquivo M
 ```text
 Content-Type: audio/mpeg
 Content-Disposition: attachment; filename*=UTF-8''<nome-do-arquivo>.mp3
+Content-Length: <tamanho-do-arquivo>
+X-Track-Title: <titulo-original-do-video>
+X-Track-Filename: <nome-do-arquivo-formatado>.mp3
+X-Track-Duration: <duracao-em-segundos>
 ```
+
+> **📝 Nota sobre os Headers:**
+>
+> - `X-Track-Title`: Contém o título original do vídeo (pode ter caracteres especiais)
+> - `X-Track-Filename`: Contém o nome do arquivo sanitizado e formatado, pronto para ser usado como nome de arquivo no frontend
+> - `X-Track-Duration`: Duração do áudio em segundos
+> - Todos os valores são codificados com `encodeURIComponent` para garantir compatibilidade
 
 **Exemplo - cURL:**
 
@@ -381,11 +395,21 @@ async function downloadYouTubeAudio(url) {
       throw new Error(error.message);
     }
     
+    // Extrair informações dos headers customizados
+    const filename = decodeURIComponent(response.headers.get('X-Track-Filename') || 'audio.mp3');
+    const title = decodeURIComponent(response.headers.get('X-Track-Title') || 'Sem título');
+    const duration = response.headers.get('X-Track-Duration');
+    
+    console.log(`📝 Título: ${title}`);
+    console.log(`⏱️  Duração: ${duration}s`);
+    console.log(`📄 Nome do arquivo: ${filename}`);
+    
+    // Download do arquivo
     const blob = await response.blob();
     const downloadUrl = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = downloadUrl;
-    a.download = 'audio.mp3';
+    a.download = filename; // Usa o nome formatado do servidor
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -414,8 +438,18 @@ async function downloadAudio(youtubeUrl) {
       responseType: 'arraybuffer'
     });
 
-    fs.writeFileSync('musica.mp3', response.data);
-    console.log('✅ Download concluído!');
+    // Extrair informações dos headers customizados
+    const filename = decodeURIComponent(response.headers['x-track-filename'] || 'audio.mp3');
+    const title = decodeURIComponent(response.headers['x-track-title'] || 'Sem título');
+    const duration = response.headers['x-track-duration'];
+    
+    console.log(`📝 Título: ${title}`);
+    console.log(`⏱️  Duração: ${duration}s`);
+    console.log(`📄 Nome do arquivo: ${filename}`);
+
+    // Salvar o arquivo com o nome formatado
+    fs.writeFileSync(filename, response.data);
+    console.log(`✅ Download concluído: ${filename}`);
   } catch (error) {
     console.error('❌ Erro:', error.response?.data || error.message);
   }
@@ -714,7 +748,16 @@ finally {
 
 Veja o arquivo [CHANGELOG.md](CHANGELOG.md) para detalhes sobre as mudanças em cada versão.
 
-**Versão Atual:** 1.0.0 (09 de outubro de 2025)
+**Versão Atual:** 1.1.0 (10 de outubro de 2025)
+
+### 🆕 Novidades v1.1.0
+
+- ✨ **Headers HTTP Customizados**: Acesso a metadados do áudio via headers
+  - `X-Track-Title`: Título original do vídeo
+  - `X-Track-Duration`: Duração em segundos
+- 🔧 **CORS Configurável**: Headers expostos para acesso cross-origin
+- 📚 **Documentação CORS**: Guia completo em `docs/CORS_HEADERS.md`
+- 🧪 **68 Testes**: Mantida 100% de cobertura
 
 ### Destaques v1.0.0
 

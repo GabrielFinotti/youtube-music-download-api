@@ -5,6 +5,39 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.1.0] - 2025-10-10
+
+### ✨ Adicionado
+
+- **Headers HTTP Customizados**: Novos headers para informações sobre o áudio baixado
+  - `X-Track-Title`: Título original do vídeo do YouTube
+  - `X-Track-Duration`: Duração do áudio em segundos
+  - `Content-Disposition`: Nome do arquivo formatado para download
+
+### 🔧 Melhorado
+
+- **Configuração CORS**: Headers customizados agora são expostos via `Access-Control-Expose-Headers`
+  - Frontend pode acessar título original do vídeo
+  - Frontend pode acessar duração do áudio
+  - Frontend pode acessar nome do arquivo formatado
+- **Documentação**: Adicionado guia completo sobre CORS e headers em `docs/CORS_HEADERS.md`
+  - Exemplos de uso com Fetch API
+  - Exemplos de uso com Axios
+  - Troubleshooting para problemas comuns
+  - Explicação detalhada do funcionamento do CORS
+
+### 📝 Atualizado
+
+- README.md com informações sobre os novos headers
+- Exemplos de código atualizados com uso dos headers customizados
+- Testes atualizados para validar exposição de headers via CORS
+
+### 🧪 Testes
+
+- Adicionado teste para validação da configuração CORS
+- 68 testes (66 executados, 2 skipped)
+- Mantida 100% de cobertura de código
+
 ## [1.0.0] - 2025-10-09
 
 ### ✨ Adicionado

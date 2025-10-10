@@ -1,19 +1,16 @@
 import express, { Request, Response } from 'express';
-import dotenv from 'dotenv';
 import youtubedl from 'youtube-dl-exec';
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
 import path from 'path';
 import fs from 'fs';
-
-dotenv.config();
+import EnvConfig from './utils/config/envConfig';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-const DOWNLOADS_DIR = path.join(__dirname, '..', 'downloads');
+const envInstance = EnvConfig.getInstance();
 const FFMPEG_PATH = ffmpegInstaller.path;
 
-if (!fs.existsSync(DOWNLOADS_DIR)) {
-  fs.mkdirSync(DOWNLOADS_DIR, { recursive: true });
+if (!fs.existsSync(envInstance.DOWNLOAD_DIR)) {
+  fs.mkdirSync(envInstance.DOWNLOAD_DIR, { recursive: true });
 }
 
 app.use(express.json());
@@ -57,7 +54,10 @@ app.get('/download', async (req: Request, res: Response) => {
     console.log('Iniciando download:', url);
 
     // Usar yt-dlp para baixar e converter diretamente para MP3
-    const outputTemplate = path.join(DOWNLOADS_DIR, '%(title)s.%(ext)s');
+    const outputTemplate = path.join(
+      envInstance.DOWNLOAD_DIR,
+      '%(title)s.%(ext)s'
+    );
 
     await youtubedl(url, {
       extractAudio: true,
@@ -69,12 +69,12 @@ app.get('/download', async (req: Request, res: Response) => {
     });
 
     // Encontrar o arquivo MP3 gerado
-    const files = fs.readdirSync(DOWNLOADS_DIR);
+    const files = fs.readdirSync(envInstance.DOWNLOAD_DIR);
     const mp3Files = files
       .filter(f => f.endsWith('.mp3'))
       .sort((a, b) => {
-        const statA = fs.statSync(path.join(DOWNLOADS_DIR, a));
-        const statB = fs.statSync(path.join(DOWNLOADS_DIR, b));
+        const statA = fs.statSync(path.join(envInstance.DOWNLOAD_DIR, a));
+        const statB = fs.statSync(path.join(envInstance.DOWNLOAD_DIR, b));
         return statB.mtimeMs - statA.mtimeMs; // Mais recente primeiro
       });
 
@@ -83,7 +83,7 @@ app.get('/download', async (req: Request, res: Response) => {
     }
 
     const latestFile = mp3Files[0];
-    const filePath = path.join(DOWNLOADS_DIR, latestFile);
+    const filePath = path.join(envInstance.DOWNLOAD_DIR, latestFile);
 
     console.log('Download concluído:', latestFile);
 
@@ -103,8 +103,8 @@ app.get('/download', async (req: Request, res: Response) => {
 });
 
 if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  app.listen(envInstance.PORT, () => {
+    console.log(`Server is running on port ${envInstance.PORT}`);
   });
 }
 

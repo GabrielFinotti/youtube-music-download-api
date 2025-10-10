@@ -837,4 +837,3 @@ Feito com ❤️ por [Gabriel H. Finotti](https://github.com/GabrielFinotti)
 **⭐ Deixe uma estrela se este projeto te ajudou!**
 
 </div>
-

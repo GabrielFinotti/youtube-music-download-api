@@ -13,6 +13,7 @@ class EnvConfig {
   private readonly _CORS!: string;
   private readonly _VERSION!: string;
   private readonly _SECRET_KEY!: string;
+  private readonly _LOG_LEVEL?: string;
 
   private constructor() {
     this.validateEnv();
@@ -22,6 +23,7 @@ class EnvConfig {
     this._CORS = process.env.CORS!!;
     this._VERSION = process.env.VERSION!!;
     this._SECRET_KEY = process.env.SECRET_KEY!!;
+    this._LOG_LEVEL = process.env.LOG_LEVEL;
   }
 
   static getInstance() {
@@ -66,6 +68,10 @@ class EnvConfig {
 
   get SECRET_KEY() {
     return this._SECRET_KEY;
+  }
+
+  get LOG_LEVEL() {
+    return this._LOG_LEVEL;
   }
 }
 

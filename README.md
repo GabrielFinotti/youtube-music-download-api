@@ -4,7 +4,7 @@
 
 ### API REST moderna para download de músicas do YouTube
 
-[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/GabrielFinotti/youtube-music-download-api)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/GabrielFinotti/youtube-music-download-api)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
 [![Node](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
@@ -13,6 +13,7 @@
 [Características](#-características) •
 [Instalação](#-instalação) •
 [Docker](#-docker) •
+[Logging](#-logging) •
 [API](#-api) •
 [Exemplos](#-exemplos) •
 [Testes](#-testes) •
@@ -33,6 +34,7 @@
 - ✅ **Conversão MP3** - Conversão automática para formato MP3
 - ✅ **Headers Customizados** - Metadados do áudio (título, duração) via HTTP headers
 - ✅ **CORS Configurável** - Headers expostos para acesso cross-origin
+- ✅ **Logging Profissional** - Sistema de logs estruturado com Pino
 - ✅ **API RESTful** - Endpoints bem definidos e versionados
 - ✅ **TypeScript** - Código totalmente tipado e seguro
 - ✅ **100% Cobertura de Testes** - 68 testes automatizados
@@ -41,6 +43,7 @@
 - ✅ **Validação Robusta** - Validação de URLs e parâmetros
 - ✅ **Sanitização** - Nomes de arquivo seguros
 - ✅ **Limpeza Automática** - Gestão de arquivos temporários
+- ✅ **Docker Ready** - Suporte completo para containers
 
 ---
 
@@ -51,6 +54,7 @@
 | **Node.js** | 18+ | Runtime JavaScript |
 | **TypeScript** | 5.9.3 | Superset com tipagem estática |
 | **Express** | 5.1.0 | Framework web minimalista |
+| **Pino** | 10.0.0 | Logger estruturado de alta performance |
 | **youtube-dl-exec** | 3.0.25 | Download de vídeos do YouTube |
 | **FFmpeg** | 1.1.0 | Processamento e conversão de áudio |
 | **Jest** | 30.2.0 | Framework de testes |
@@ -122,6 +126,7 @@ NODE_ENV=development
 PORT=3000
 CORS=*
 VERSION=v1
+LOG_LEVEL=info
 SECRET_KEY=your-secret-key-here
 ```
 
@@ -187,6 +192,7 @@ docker run -d \
   -e PORT=3000 \
   -e CORS=* \
   -e VERSION=v1 \
+  -e LOG_LEVEL=info \
   -e SECRET_KEY=your-secret-key \
   ytune-api:latest
 ```
@@ -260,10 +266,77 @@ NODE_ENV=production
 PORT=3000
 CORS=*
 VERSION=v1
+LOG_LEVEL=info
 SECRET_KEY=your-secret-key-here
 ```
 
 O Docker Compose lerá automaticamente essas variáveis.
+
+---
+
+## 📝 Logging
+
+A YTune API possui um sistema de logging profissional baseado em **Pino**, otimizado para alta performance e ambientes com recursos limitados como Raspberry Pi 4.
+
+### 🎯 Características do Sistema de Logging
+
+- ✅ **Alta Performance** - ~10x mais rápido que Winston
+- ✅ **Logs Estruturados** - Formato JSON para produção
+- ✅ **Logs Formatados** - Coloridos e legíveis em desenvolvimento
+- ✅ **Níveis Configuráveis** - TRACE, DEBUG, INFO, WARN, ERROR, FATAL
+- ✅ **Middleware HTTP** - Logging automático de requisições
+- ✅ **Child Loggers** - Contexto específico por módulo
+- ✅ **Otimizado para RPi** - Mínimo uso de CPU e memória
+
+### ⚙️ Configuração
+
+Configure o nível de log através da variável de ambiente `LOG_LEVEL`:
+
+```env
+# .env
+LOG_LEVEL=info  # trace, debug, info, warn, error, fatal
+```
+
+### 📊 Formato dos Logs
+
+**Desenvolvimento (legível e colorido):**
+
+```
+[15:30:45.123] INFO (DownloadService): Iniciando processo de download
+    url: "https://www.youtube.com/watch?v=..."
+```
+
+**Produção (JSON estruturado):**
+
+```json
+{
+  "level": 30,
+  "time": 1697123445123,
+  "context": "DownloadService",
+  "msg": "Iniciando processo de download",
+  "url": "https://www.youtube.com/watch?v=..."
+}
+```
+
+### 🔗 Documentação Completa
+
+Para guias detalhados, exemplos práticos e melhores práticas, consulte a documentação completa de logging:
+
+📚 **[Documentação de Logging](docs/logging/README.md)**
+
+- [Overview](docs/logging/overview.md) - Documentação técnica completa
+- [Quickstart](docs/logging/quickstart.md) - Guia rápido de início
+- [Examples](docs/logging/examples.md) - Exemplos práticos de uso
+
+### 💡 Exemplo de Uso
+
+Logs são gerados automaticamente para:
+
+- ✅ Requisições HTTP (método, URL, status, tempo de resposta)
+- ✅ Processos de download (início, progresso, conclusão)
+- ✅ Erros e exceções (com stack traces completos)
+- ✅ Validações e sanitizações
+- ✅ Limpeza de arquivos temporários
 
 ---
 
@@ -850,14 +923,14 @@ finally {
 
 ### Próximas Versões
 
-#### v1.3.0 (Planejado)
+#### v1.4.0 (Planejado)
 
 - [ ] Suporte a playlists do YouTube
 - [ ] Múltiplos formatos de áudio (WAV, FLAC, AAC)
 - [ ] Sistema de fila para downloads
 - [ ] WebSockets para progresso em tempo real
 
-#### v1.4.0 (Planejado)
+#### v1.5.0 (Planejado)
 
 - [ ] Autenticação JWT
 - [ ] Rate limiting por IP
@@ -869,7 +942,6 @@ finally {
 - [ ] GraphQL API
 - [ ] CI/CD com GitHub Actions
 - [ ] Documentação OpenAPI/Swagger
-- [ ] Logs estruturados (Winston)
 - [ ] Métricas e monitoramento (Prometheus)
 
 ---
@@ -878,9 +950,27 @@ finally {
 
 Veja o arquivo [CHANGELOG.md](CHANGELOG.md) para detalhes sobre as mudanças em cada versão.
 
-**Versão Atual:** 1.2.0 (10 de outubro de 2025)
+**Versão Atual:** 1.3.0 (11 de outubro de 2025)
 
-### 🆕 Novidades v1.2.0
+### 🆕 Novidades v1.3.0
+
+- 📝 **Sistema de Logging Profissional com Pino**:
+  - Logger estruturado de alta performance (~10x mais rápido que Winston)
+  - Logs em formato JSON para produção
+  - Logs formatados e coloridos para desenvolvimento (pino-pretty)
+  - Níveis de log configuráveis (TRACE, DEBUG, INFO, WARN, ERROR, FATAL)
+  - Middleware HTTP automático para logging de requisições
+  - Child loggers com contexto específico por módulo
+  - Otimizado para Raspberry Pi 4 e ambientes com recursos limitados
+  - Serialização automática de erros com stack traces
+- 📚 **Documentação Completa de Logging**:
+  - Overview técnico detalhado
+  - Guia rápido (Quickstart)
+  - Exemplos práticos de uso
+  - Boas práticas e integração
+- ⚙️ **Nova Variável de Ambiente**: `LOG_LEVEL` para configurar nível de log
+
+### Destaques v1.2.0
 
 - 🐳 **Suporte Docker Completo**: Dockerfile multi-stage otimizado
   - Build em duas etapas para imagem final menor
@@ -893,11 +983,6 @@ Veja o arquivo [CHANGELOG.md](CHANGELOG.md) para detalhes sobre as mudanças em 
   - Suporte a variáveis de ambiente
   - Security options otimizadas
 - 📦 **Scripts Docker**: Novos comandos npm para gerenciamento
-  - `npm run docker:build` - Construir imagem
-  - `npm run docker:up` - Iniciar container
-  - `npm run docker:down` - Parar container
-  - `npm run docker:logs` - Ver logs
-  - `npm run docker:rebuild` - Reconstruir do zero
 - 📝 **Documentação Docker**: Guia completo de uso do Docker
 - 🔒 **Segurança Aprimorada**: Capabilities mínimas e boas práticas
 

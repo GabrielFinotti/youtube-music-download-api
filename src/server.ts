@@ -1,10 +1,38 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import pinoHttp from 'pino-http';
 import EnvConfig from './utils/config/envConfig';
 import downloadRoute from './routes/download.route';
+import Logger from './utils/logger/logger';
 
 const app = express();
 const envInstance = EnvConfig.getInstance();
+const logger = Logger.createChildLogger('Server');
+
+app.use(
+  pinoHttp({
+    logger: Logger.getInstance(), 
+    customLogLevel: (req, res, err) => {
+      if (res.statusCode >= 400 && res.statusCode < 500) {
+        return 'warn';
+      } else if (res.statusCode >= 500 || err) {
+        return 'error';
+      }
+      return 'info';
+    },
+    serializers: {
+      req: req => ({
+        method: req.method,
+        url: req.url,
+        query: req.query,
+      }),
+      res: res => ({
+        statusCode: res.statusCode,
+      }),
+    },
+    autoLogging: envInstance.NODE_ENV !== 'development',
+  })
+);
 
 app.use(express.json());
 app.use(
@@ -30,14 +58,14 @@ app.use(`/api/${envInstance.VERSION}`, downloadRoute);
 
 const startServer = async () => {
   try {
-    console.log(`Iniciando servidor no ambiente ${envInstance.NODE_ENV}...`);
+    logger.info(`Iniciando servidor no ambiente ${envInstance.NODE_ENV}...`);
 
     app.listen(envInstance.PORT, () => {
-      console.log(`Servidor rodando na porta ${envInstance.PORT}`);
-      console.log(`Versão da API: ${envInstance.VERSION}`);
+      logger.info(`Servidor rodando na porta ${envInstance.PORT}`);
+      logger.info(`Versão da API: ${envInstance.VERSION}`);
     });
   } catch (error) {
-    console.error('Erro ao iniciar o servidor:', error);
+    logger.error({ err: error }, 'Erro ao iniciar o servidor');
     process.exit(1);
   }
 };

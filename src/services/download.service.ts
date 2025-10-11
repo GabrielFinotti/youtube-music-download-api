@@ -40,7 +40,13 @@ class DownloadService {
 
   private async cleanupTempDir(dirPath: string): Promise<void> {
     try {
+      console.info(
+        `[Download Service] Limpando diretório temporário: ${dirPath}`
+      );
       await fs.rm(dirPath, { recursive: true, force: true });
+      console.info(
+        '[Download Service] Diretório temporário removido com sucesso'
+      );
     } catch (error) {
       console.error('Erro ao limpar diretório temporário:', error);
     }
@@ -71,14 +77,32 @@ class DownloadService {
     let tempDir: string | null = null;
 
     try {
+      console.info(
+        `[Download Service] Iniciando processo de download para: ${url}`
+      );
+
       if (!this.validateYouTubeUrl(url)) {
+        console.info(
+          '[Download Service] Validação falhou: URL do YouTube inválida'
+        );
         throw new Error('URL do YouTube inválida');
       }
+
+      console.info('[Download Service] URL validada com sucesso');
 
       const isPlaylistUrl = this.isPlaylist(url);
       const cleanUrl = isPlaylistUrl ? this.extractVideoUrl(url) : url;
 
+      if (isPlaylistUrl) {
+        console.info(
+          `[Download Service] URL de playlist detectada, extraindo vídeo: ${cleanUrl}`
+        );
+      }
+
       tempDir = await this.createTempDir();
+      console.info(
+        `[Download Service] Diretório temporário criado: ${tempDir}`
+      );
 
       const outputTemplate = path.join(tempDir, '%(title)s.%(ext)s');
       const options = {
@@ -92,6 +116,8 @@ class DownloadService {
         ffmpegLocation: this._ffmpegPath,
         noPlaylist: true,
       };
+
+      console.info('[Download Service] Obtendo metadados do vídeo...');
       const info: any = await youtubedl(cleanUrl, {
         dumpSingleJson: true,
         noWarnings: true,
@@ -99,15 +125,33 @@ class DownloadService {
         preferFreeFormats: true,
       });
 
+      console.info(
+        `[Download Service] Metadados obtidos - Título: ${info.title}, Duração: ${info.duration}s`
+      );
+      console.info(
+        '[Download Service] Iniciando download e conversão para MP3...'
+      );
+
       await youtubedl(cleanUrl, options);
+
+      console.info('[Download Service] Download e conversão concluídos');
 
       const filename = `${this.sanitizeFilename(info.title)}.mp3`;
       const filepath = path.join(tempDir, filename);
 
+      console.info(`[Download Service] Lendo arquivo: ${filename}`);
       const buffer = await fs.readFile(filepath);
       const stats = await fs.stat(filepath);
 
+      console.info(
+        `[Download Service] Arquivo lido com sucesso - Tamanho: ${stats.size} bytes`
+      );
+
       await this.cleanupTempDir(tempDir);
+
+      console.info(
+        '[Download Service] Processo de download finalizado com sucesso'
+      );
 
       return {
         title: info.title,
@@ -117,6 +161,10 @@ class DownloadService {
         buffer,
       };
     } catch (error) {
+      console.error(
+        `[Download Service] Erro no processo de download: ${error instanceof Error ? error.message : 'Erro desconhecido'}`
+      );
+
       if (tempDir) {
         await this.cleanupTempDir(tempDir);
       }

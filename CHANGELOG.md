@@ -5,6 +5,101 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.2.0] - 2025-10-10
+
+### ✨ Adicionado
+
+- **Suporte Docker Completo**:
+  - Dockerfile multi-stage otimizado para produção
+  - Imagem final baseada em Alpine Linux (~200MB)
+  - Build em duas etapas (builder + production)
+  - FFmpeg e Python3 pré-instalados na imagem
+  - Health check integrado no container
+  - Usuário não-root (nodejs:1001) para segurança
+
+- **Docker Compose**:
+  - Arquivo `docker-compose.yml` para orquestração
+  - Configuração para integração com rede externa (`proxy_net`)
+  - Suporte completo a variáveis de ambiente via arquivo `.env`
+  - Health checks configurados (intervalo 30s, timeout 10s, 3 retries)
+  - Security options otimizadas (`no-new-privileges`, capabilities mínimas)
+
+- **Scripts Docker no package.json**:
+  - `docker:build` - Construir a imagem Docker
+  - `docker:up` - Iniciar container em background
+  - `docker:down` - Parar e remover container
+  - `docker:logs` - Visualizar logs do container
+  - `docker:rebuild` - Reconstruir do zero sem cache
+
+- **Arquivo .dockerignore**:
+  - Otimização de build excluindo arquivos desnecessários
+  - Redução do tamanho da imagem
+  - Exclusão de dependências de desenvolvimento
+  - Exclusão de arquivos de teste e documentação
+
+### 🔧 Melhorado
+
+- **Segurança do Container**:
+  - Execução com usuário não-root
+  - Capabilities mínimas (apenas CHOWN, SETGID, SETUID)
+  - Security option `no-new-privileges:true`
+  - Drop de todas as capabilities por padrão
+
+- **Otimização de Imagem**:
+  - Multi-stage build reduz tamanho final
+  - Apenas dependências de produção na imagem final
+  - Cache otimizado de dependências npm
+  - Limpeza de cache npm após instalação
+
+### 📝 Documentação
+
+- Adicionada seção completa sobre Docker no README.md
+- Guia de uso com Docker Compose
+- Exemplos de comandos Docker manuais
+- Documentação de características de segurança
+- Explicação detalhada do health check
+- Instruções para uso com redes externas
+- Atualizado roadmap removendo Docker (implementado)
+
+### 🧪 Testes
+
+- Todos os 68 testes continuam passando
+- Mantida 100% de cobertura de código
+- Testes compatíveis com ambiente Docker
+
+## [1.1.0] - 2025-10-10
+
+### ✨ Adicionado
+
+- **Headers HTTP Customizados**: Novos headers para informações sobre o áudio baixado
+  - `X-Track-Title`: Título original do vídeo do YouTube
+  - `X-Track-Duration`: Duração do áudio em segundos
+  - `Content-Disposition`: Nome do arquivo formatado para download
+
+### 🔧 Melhorado
+
+- **Configuração CORS**: Headers customizados agora são expostos via `Access-Control-Expose-Headers`
+  - Frontend pode acessar título original do vídeo
+  - Frontend pode acessar duração do áudio
+  - Frontend pode acessar nome do arquivo formatado
+- **Documentação**: Adicionado guia completo sobre CORS e headers em `docs/CORS_HEADERS.md`
+  - Exemplos de uso com Fetch API
+  - Exemplos de uso com Axios
+  - Troubleshooting para problemas comuns
+  - Explicação detalhada do funcionamento do CORS
+
+### 📝 Atualizado
+
+- README.md com informações sobre os novos headers
+- Exemplos de código atualizados com uso dos headers customizados
+- Testes atualizados para validar exposição de headers via CORS
+
+### 🧪 Testes
+
+- Adicionado teste para validação da configuração CORS
+- 68 testes (66 executados, 2 skipped)
+- Mantida 100% de cobertura de código
+
 ## [1.0.0] - 2025-10-09
 
 ### ✨ Adicionado

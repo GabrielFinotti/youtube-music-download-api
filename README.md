@@ -4,7 +4,7 @@
 
 ### API REST moderna para download de músicas do YouTube
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/GabrielFinotti/youtube-music-download-api)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/GabrielFinotti/youtube-music-download-api)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
 [![Node](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
@@ -12,9 +12,11 @@
 
 [Características](#-características) •
 [Instalação](#-instalação) •
+[Docker](#-docker) •
 [API](#-api) •
 [Exemplos](#-exemplos) •
 [Testes](#-testes) •
+[CORS & Headers](docs/CORS_HEADERS.md) •
 [Changelog](#-changelog)
 
 </div>
@@ -29,9 +31,11 @@
 
 - ✅ **Download de Áudio do YouTube** - Extração de áudio de vídeos
 - ✅ **Conversão MP3** - Conversão automática para formato MP3
+- ✅ **Headers Customizados** - Metadados do áudio (título, duração) via HTTP headers
+- ✅ **CORS Configurável** - Headers expostos para acesso cross-origin
 - ✅ **API RESTful** - Endpoints bem definidos e versionados
 - ✅ **TypeScript** - Código totalmente tipado e seguro
-- ✅ **100% Cobertura de Testes** - 67 testes automatizados
+- ✅ **100% Cobertura de Testes** - 68 testes automatizados
 - ✅ **Arquitetura em Camadas** - Controller → Service → Routes
 - ✅ **Respostas Padronizadas** - Formato consistente de resposta
 - ✅ **Validação Robusta** - Validação de URLs e parâmetros
@@ -140,6 +144,129 @@ O servidor estará rodando em `http://localhost:3000` 🚀
 
 ---
 
+## 🐳 Docker
+
+A aplicação possui suporte completo para Docker, incluindo multi-stage builds, otimizações de segurança e health checks.
+
+### 🚢 Construir e Executar com Docker Compose
+
+A forma mais simples de executar a aplicação é usando Docker Compose:
+
+```bash
+# Construir a imagem
+npm run docker:build
+
+# Iniciar o container
+npm run docker:up
+
+# Ver logs
+npm run docker:logs
+
+# Parar o container
+npm run docker:down
+
+# Reconstruir do zero (sem cache)
+npm run docker:rebuild
+```
+
+### 📦 Docker Manual
+
+**Construir a imagem:**
+
+```bash
+docker build -t ytune-api:latest .
+```
+
+**Executar o container:**
+
+```bash
+docker run -d \
+  --name ytune-api \
+  -p 3000:3000 \
+  -e NODE_ENV=production \
+  -e PORT=3000 \
+  -e CORS=* \
+  -e VERSION=v1 \
+  -e SECRET_KEY=your-secret-key \
+  ytune-api:latest
+```
+
+**Verificar logs:**
+
+```bash
+docker logs -f ytune-api
+```
+
+**Parar e remover:**
+
+```bash
+docker stop ytune-api
+docker rm ytune-api
+```
+
+### 🔒 Características de Segurança do Docker
+
+- ✅ **Multi-stage builds** - Imagem final otimizada e menor
+- ✅ **Usuário não-root** - Execução com usuário `nodejs` (UID 1001)
+- ✅ **Capabilities mínimas** - Apenas permissões essenciais
+- ✅ **Health checks** - Monitoramento automático de saúde
+- ✅ **Security options** - `no-new-privileges:true`
+- ✅ **Imagem Alpine** - Base mínima e segura
+
+### 📊 Detalhes da Imagem Docker
+
+| Característica | Valor |
+|----------------|-------|
+| **Imagem Base** | `node:20-alpine` |
+| **Tamanho Final** | ~200MB |
+| **Porta Exposta** | 3000 |
+| **Health Check** | A cada 30s |
+| **Usuário** | `nodejs` (non-root) |
+
+### 🔍 Health Check
+
+O container possui um health check integrado que verifica o endpoint `/api/v1/health`:
+
+```yaml
+healthcheck:
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s
+```
+
+**Verificar status:**
+
+```bash
+docker inspect --format='{{.State.Health.Status}}' ytune-api
+```
+
+### 🌐 Docker Compose com Rede Externa
+
+O `docker-compose.yml` está configurado para usar uma rede externa chamada `proxy_net`. Isso permite integração com reverse proxies como Traefik ou Nginx.
+
+**Criar a rede (se ainda não existir):**
+
+```bash
+docker network create proxy_net
+```
+
+### 📝 Variáveis de Ambiente no Docker
+
+Crie um arquivo `.env` na raiz do projeto:
+
+```env
+NODE_ENV=production
+PORT=3000
+CORS=*
+VERSION=v1
+SECRET_KEY=your-secret-key-here
+```
+
+O Docker Compose lerá automaticamente essas variáveis.
+
+---
+
 ## 🎯 Scripts Disponíveis
 
 ```bash
@@ -160,6 +287,13 @@ npm run test:coverage    # Executa testes com relatório de cobertura
 # ✨ Formatação
 npm run format           # Formata código com Prettier
 npm run format:check     # Verifica formatação do código
+
+# 🐳 Docker
+npm run docker:build     # Constrói a imagem Docker
+npm run docker:up        # Inicia o container em background
+npm run docker:down      # Para e remove o container
+npm run docker:logs      # Exibe logs do container
+npm run docker:rebuild   # Reconstrói do zero (sem cache)
 ```
 
 ---
@@ -268,7 +402,18 @@ Faz o download de áudio de um vídeo do YouTube e retorna o buffer do arquivo M
 ```text
 Content-Type: audio/mpeg
 Content-Disposition: attachment; filename*=UTF-8''<nome-do-arquivo>.mp3
+Content-Length: <tamanho-do-arquivo>
+X-Track-Title: <titulo-original-do-video>
+X-Track-Filename: <nome-do-arquivo-formatado>.mp3
+X-Track-Duration: <duracao-em-segundos>
 ```
+
+> **📝 Nota sobre os Headers:**
+>
+> - `X-Track-Title`: Contém o título original do vídeo (pode ter caracteres especiais)
+> - `X-Track-Filename`: Contém o nome do arquivo sanitizado e formatado, pronto para ser usado como nome de arquivo no frontend
+> - `X-Track-Duration`: Duração do áudio em segundos
+> - Todos os valores são codificados com `encodeURIComponent` para garantir compatibilidade
 
 **Exemplo - cURL:**
 
@@ -381,11 +526,21 @@ async function downloadYouTubeAudio(url) {
       throw new Error(error.message);
     }
     
+    // Extrair informações dos headers customizados
+    const filename = decodeURIComponent(response.headers.get('X-Track-Filename') || 'audio.mp3');
+    const title = decodeURIComponent(response.headers.get('X-Track-Title') || 'Sem título');
+    const duration = response.headers.get('X-Track-Duration');
+    
+    console.log(`📝 Título: ${title}`);
+    console.log(`⏱️  Duração: ${duration}s`);
+    console.log(`📄 Nome do arquivo: ${filename}`);
+    
+    // Download do arquivo
     const blob = await response.blob();
     const downloadUrl = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = downloadUrl;
-    a.download = 'audio.mp3';
+    a.download = filename; // Usa o nome formatado do servidor
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -414,8 +569,18 @@ async function downloadAudio(youtubeUrl) {
       responseType: 'arraybuffer'
     });
 
-    fs.writeFileSync('musica.mp3', response.data);
-    console.log('✅ Download concluído!');
+    // Extrair informações dos headers customizados
+    const filename = decodeURIComponent(response.headers['x-track-filename'] || 'audio.mp3');
+    const title = decodeURIComponent(response.headers['x-track-title'] || 'Sem título');
+    const duration = response.headers['x-track-duration'];
+    
+    console.log(`📝 Título: ${title}`);
+    console.log(`⏱️  Duração: ${duration}s`);
+    console.log(`📄 Nome do arquivo: ${filename}`);
+
+    // Salvar o arquivo com o nome formatado
+    fs.writeFileSync(filename, response.data);
+    console.log(`✅ Download concluído: ${filename}`);
   } catch (error) {
     console.error('❌ Erro:', error.response?.data || error.message);
   }
@@ -685,14 +850,14 @@ finally {
 
 ### Próximas Versões
 
-#### v1.1.0 (Planejado)
+#### v1.3.0 (Planejado)
 
 - [ ] Suporte a playlists do YouTube
 - [ ] Múltiplos formatos de áudio (WAV, FLAC, AAC)
 - [ ] Sistema de fila para downloads
 - [ ] WebSockets para progresso em tempo real
 
-#### v1.2.0 (Planejado)
+#### v1.4.0 (Planejado)
 
 - [ ] Autenticação JWT
 - [ ] Rate limiting por IP
@@ -702,7 +867,6 @@ finally {
 #### v2.0.0 (Futuro)
 
 - [ ] GraphQL API
-- [ ] Docker e Docker Compose
 - [ ] CI/CD com GitHub Actions
 - [ ] Documentação OpenAPI/Swagger
 - [ ] Logs estruturados (Winston)
@@ -714,7 +878,37 @@ finally {
 
 Veja o arquivo [CHANGELOG.md](CHANGELOG.md) para detalhes sobre as mudanças em cada versão.
 
-**Versão Atual:** 1.0.0 (09 de outubro de 2025)
+**Versão Atual:** 1.2.0 (10 de outubro de 2025)
+
+### 🆕 Novidades v1.2.0
+
+- 🐳 **Suporte Docker Completo**: Dockerfile multi-stage otimizado
+  - Build em duas etapas para imagem final menor
+  - Imagem baseada em Alpine Linux (~200MB)
+  - Usuário não-root para segurança
+  - Health checks integrados
+- 🔧 **Docker Compose**: Orquestração simplificada
+  - Configuração pronta para produção
+  - Integração com rede externa (proxy_net)
+  - Suporte a variáveis de ambiente
+  - Security options otimizadas
+- 📦 **Scripts Docker**: Novos comandos npm para gerenciamento
+  - `npm run docker:build` - Construir imagem
+  - `npm run docker:up` - Iniciar container
+  - `npm run docker:down` - Parar container
+  - `npm run docker:logs` - Ver logs
+  - `npm run docker:rebuild` - Reconstruir do zero
+- 📝 **Documentação Docker**: Guia completo de uso do Docker
+- 🔒 **Segurança Aprimorada**: Capabilities mínimas e boas práticas
+
+### Destaques v1.1.0
+
+- ✨ **Headers HTTP Customizados**: Acesso a metadados do áudio via headers
+  - `X-Track-Title`: Título original do vídeo
+  - `X-Track-Duration`: Duração em segundos
+- 🔧 **CORS Configurável**: Headers expostos para acesso cross-origin
+- 📚 **Documentação CORS**: Guia completo em `docs/CORS_HEADERS.md`
+- 🧪 **68 Testes**: Mantida 100% de cobertura
 
 ### Destaques v1.0.0
 

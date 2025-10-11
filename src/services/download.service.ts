@@ -157,13 +157,12 @@ class DownloadService {
           { err: error.message, url },
           'Erro no processo de download'
         );
+      } else {
+        this.logger.error(
+          { err: error, url },
+          'Erro desconhecido no processo de download'
+        );
       }
-
-      this.logger.error(
-        { err: error, url },
-        'Erro desconhecido no processo de download'
-      );
-
       if (tempDir) {
         await this.cleanupTempDir(tempDir);
       }

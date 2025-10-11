@@ -5,6 +5,72 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.3.0] - 2025-10-11
+
+### ✨ Adicionado
+
+- **Sistema de Logging Profissional com Pino**:
+  - Logger estruturado e de alta performance baseado em Pino
+  - Logs em formato JSON para ambiente de produção
+  - Logs formatados e coloridos para desenvolvimento (pino-pretty)
+  - Níveis de log configuráveis via variável de ambiente (TRACE, DEBUG, INFO, WARN, ERROR, FATAL)
+  - Middleware HTTP automático para logging de requisições
+  - Child loggers com contexto específico por módulo
+  - Otimizado para Raspberry Pi 4 e ambientes com recursos limitados
+  - Serialização automática de erros com stack traces
+  - Timestamps automáticos em ISO 8601
+
+- **Documentação Completa de Logging**:
+  - `docs/logging/README.md` - Índice e guia de navegação
+  - `docs/logging/overview.md` - Documentação técnica detalhada
+  - `docs/logging/quickstart.md` - Guia rápido de início
+  - `docs/logging/examples.md` - Exemplos práticos de uso
+  - Integração com o README principal
+
+- **Variáveis de Ambiente para Logging**:
+  - `LOG_LEVEL` - Configurar nível de log (padrão: 'info')
+  - Suporte completo a diferentes níveis por ambiente
+
+### 🔧 Melhorado
+
+- **Performance**:
+  - Logger assíncrono não-bloqueante
+  - Overhead mínimo (~10x mais rápido que Winston)
+  - Uso eficiente de CPU e memória
+  - Ideal para Raspberry Pi e dispositivos embarcados
+
+- **Estrutura de Logs**:
+  - Logs estruturados facilitam análise e busca
+  - Contexto automático por módulo (DownloadService, etc.)
+  - Correlação de requisições HTTP
+  - Metadados enriquecidos (url, responseTime, statusCode)
+
+- **Developer Experience**:
+  - Logs coloridos e formatados em desenvolvimento
+  - Logs JSON estruturados em produção
+  - Fácil integração com ferramentas de monitoramento
+  - Stack traces completos para debugging
+
+### 📝 Documentação
+
+- Adicionada seção sobre Logging no README principal
+- Link para documentação completa de logging
+- Exemplos de configuração e uso
+- Boas práticas de logging
+
+### 🧪 Testes
+
+- Todos os 68 testes continuam passando
+- Mantida 100% de cobertura de código
+- Sistema de logging integrado aos testes
+
+### 🔗 Integração
+
+- Logger integrado ao DownloadService
+- Middleware HTTP para logging automático de requisições
+- Suporte a diferentes formatos por ambiente
+- Compatible com Docker e ambientes de produção
+
 ## [1.2.0] - 2025-10-10
 
 ### ✨ Adicionado

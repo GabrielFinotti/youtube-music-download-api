@@ -5,6 +5,31 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.3.1] - 2025-10-14
+
+### 🔧 Melhorado
+
+- **Gestão de Arquivos Temporários**:
+  - Implementado uso de nomes de arquivo únicos (UUID) para downloads temporários
+  - Elimina conflitos potenciais ao processar múltiplas requisições simultâneas
+  - Melhora a gestão e rastreamento de arquivos temporários
+  - Aprimora a confiabilidade do processo de limpeza de arquivos
+
+- **Tratamento de Erros**:
+  - Adicionada validação de tipo para metadados do vídeo
+  - Melhor detecção de erros durante obtenção de metadados
+  - Mensagens de erro mais específicas e informativas
+
+- **Logging**:
+  - Logs mais detalhados incluindo nome do arquivo temporário
+  - Melhor rastreabilidade do ciclo de vida dos arquivos
+  - Informações de debug aprimoradas para troubleshooting
+
+### 🐛 Corrigido
+
+- Correção de possíveis conflitos de arquivo ao processar downloads simultâneos
+- Melhora na leitura de arquivos usando nomes temporários consistentes
+
 ## [1.3.0] - 2025-10-11
 
 ### ✨ Adicionado

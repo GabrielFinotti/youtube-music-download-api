@@ -4,7 +4,7 @@
 
 ### API REST moderna para download de músicas do YouTube
 
-[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/GabrielFinotti/youtube-music-download-api)
+[![Version](https://img.shields.io/badge/version-1.3.1-blue.svg)](https://github.com/GabrielFinotti/youtube-music-download-api)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
 [![Node](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
@@ -42,7 +42,8 @@
 - ✅ **Respostas Padronizadas** - Formato consistente de resposta
 - ✅ **Validação Robusta** - Validação de URLs e parâmetros
 - ✅ **Sanitização** - Nomes de arquivo seguros
-- ✅ **Limpeza Automática** - Gestão de arquivos temporários
+- ✅ **Limpeza Automática** - Gestão inteligente de arquivos temporários com UUID
+- ✅ **Processamento Concorrente** - Suporte para múltiplas requisições simultâneas
 - ✅ **Docker Ready** - Suporte completo para containers
 
 ---

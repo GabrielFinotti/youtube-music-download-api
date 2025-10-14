@@ -5,6 +5,34 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.3.2] - 2025-10-14
+
+### 🐛 Corrigido
+
+- **Sistema de Logging**:
+  - Corrigido erro no Docker onde `pino-pretty` não estava disponível em produção
+  - Implementado logging condicional baseado em ambiente (NODE_ENV)
+  - Logs formatados com `pino-pretty` apenas em ambiente de desenvolvimento
+  - Logs em formato JSON estruturado em produção (mais performático e adequado)
+
+### 🔧 Melhorado
+
+- **Compatibilidade Docker**:
+  - Logger agora funciona corretamente em containers Docker
+  - Não requer `pino-pretty` como dependência de produção
+  - Reduz tamanho da imagem Docker ao manter `pino-pretty` como devDependency
+  - Melhora performance em produção com logging JSON nativo do Pino
+
+- **Performance**:
+  - Logging JSON em produção é mais rápido que usar transport `pino-pretty`
+  - Menor overhead de CPU e memória em ambientes produtivos
+  - Ideal para agregação de logs com ferramentas como ELK, Grafana Loki, etc.
+
+### 📝 Documentação
+
+- Documentação atualizada sobre o comportamento do logging em diferentes ambientes
+- Esclarecimento sobre formato de logs em desenvolvimento vs produção
+
 ## [1.3.1] - 2025-10-14
 
 ### 🔧 Melhorado

@@ -4,7 +4,7 @@
 
 ### API REST moderna para download de músicas do YouTube
 
-[![Version](https://img.shields.io/badge/version-1.3.1-blue.svg)](https://github.com/GabrielFinotti/youtube-music-download-api)
+[![Version](https://img.shields.io/badge/version-1.3.2-blue.svg)](https://github.com/GabrielFinotti/youtube-music-download-api)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
 [![Node](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
@@ -284,10 +284,12 @@ A YTune API possui um sistema de logging profissional baseado em **Pino**, otimi
 - ✅ **Alta Performance** - ~10x mais rápido que Winston
 - ✅ **Logs Estruturados** - Formato JSON para produção
 - ✅ **Logs Formatados** - Coloridos e legíveis em desenvolvimento
+- ✅ **Logging Condicional** - Formato adaptado automaticamente ao ambiente
 - ✅ **Níveis Configuráveis** - TRACE, DEBUG, INFO, WARN, ERROR, FATAL
 - ✅ **Middleware HTTP** - Logging automático de requisições
 - ✅ **Child Loggers** - Contexto específico por módulo
 - ✅ **Otimizado para RPi** - Mínimo uso de CPU e memória
+- ✅ **Docker Ready** - Funciona perfeitamente em containers
 
 ### ⚙️ Configuração
 
@@ -300,24 +302,28 @@ LOG_LEVEL=info  # trace, debug, info, warn, error, fatal
 
 ### 📊 Formato dos Logs
 
-**Desenvolvimento (legível e colorido):**
+O sistema de logging adapta automaticamente o formato baseado no ambiente (`NODE_ENV`):
+
+**Desenvolvimento (legível e colorido com pino-pretty):**
 
 ```
 [15:30:45.123] INFO (DownloadService): Iniciando processo de download
     url: "https://www.youtube.com/watch?v=..."
 ```
 
-**Produção (JSON estruturado):**
+**Produção/Docker (JSON estruturado - alta performance):**
 
 ```json
 {
   "level": 30,
-  "time": 1697123445123,
+  "time": "14/10/2025 15:30:45",
   "context": "DownloadService",
   "msg": "Iniciando processo de download",
   "url": "https://www.youtube.com/watch?v=..."
 }
 ```
+
+> **💡 Nota**: Em produção, o logger usa JSON nativo do Pino (sem `pino-pretty`) para máxima performance e compatibilidade com ferramentas de agregação de logs como ELK Stack, Grafana Loki, Datadog, etc.
 
 ### 🔗 Documentação Completa
 

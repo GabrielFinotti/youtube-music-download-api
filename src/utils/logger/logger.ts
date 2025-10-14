@@ -9,8 +9,10 @@ class Logger {
   static getInstance(): pino.Logger {
     if (!Logger.instance) {
       const logLevel = this.getLogLevel();
+      const envInstance = EnvConfig.getInstance();
+      const isDevelopment = envInstance.NODE_ENV === 'development';
 
-      Logger.instance = pino({
+      const baseConfig: pino.LoggerOptions = {
         level: logLevel,
         formatters: {
           level: label => {
@@ -27,7 +29,11 @@ class Logger {
           const seconds = String(now.getSeconds()).padStart(2, '0');
           return `,"time":"${day}/${month}/${year} ${hours}:${minutes}:${seconds}"`;
         },
-        transport: {
+        base: undefined,
+      };
+
+      if (isDevelopment) {
+        baseConfig.transport = {
           target: 'pino-pretty',
           options: {
             colorize: true,
@@ -38,9 +44,10 @@ class Logger {
             sync: true,
             customPrettifiers: {},
           },
-        },
-        base: undefined,
-      });
+        };
+      }
+
+      Logger.instance = pino(baseConfig);
     }
 
     return Logger.instance;

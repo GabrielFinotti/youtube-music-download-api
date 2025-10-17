@@ -107,10 +107,11 @@ class DownloadService {
       const outputTemplate = path.join(tempDir, `${tempFilename}.%(ext)s`);
       const options = {
         output: outputTemplate,
-        format: 'bestaudio/best',
+        format: 'bestaudio*',
         extractAudio: true,
-        audioFormat: 'mp3',
+        audioFormat: 'm4a',
         audioQuality: 0,
+        postprocessorArgs: 'ffmpeg:-b:a 320k -ar 48000',
         embedThumbnail: true,
         addMetadata: true,
         ffmpegLocation: this._ffmpegPath,
@@ -133,14 +134,14 @@ class DownloadService {
         { title: info.title, duration: info.duration },
         'Metadados obtidos'
       );
-      this.logger.info('Iniciando download e conversão para MP3...');
+      this.logger.info('Iniciando download e conversão para M4A AAC...');
 
       await youtubedl(cleanUrl, options);
 
       this.logger.info('Download e conversão concluídos');
 
-      const filename = `${this.sanitizeFilename(info.title)}.mp3`;
-      const filepath = path.join(tempDir, `${tempFilename}.mp3`);
+      const filename = `${this.sanitizeFilename(info.title)}.m4a`;
+      const filepath = path.join(tempDir, `${tempFilename}.m4a`);
 
       this.logger.debug({ tempFile: tempFilename, filename }, 'Lendo arquivo');
       const buffer = await fs.readFile(filepath);

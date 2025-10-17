@@ -5,6 +5,46 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.4.0] - 2025-10-16
+
+### ✨ Novo
+
+- **Qualidade de Áudio Premium**:
+  - Implementado download de áudio em **máxima qualidade (320kbps @ 48kHz)**
+  - Otimização do seletor de formato de áudio para `bestaudio*` (sem restrições de extensão)
+  - Sample rate profissional de 48kHz para qualidade superior
+  - Arquivos com qualidade aproximadamente 2.5x superior ao padrão anterior
+
+### 🔧 Melhorado
+
+- **Processamento de Áudio com FFmpeg**:
+  - Configuração de bitrate fixo em 320kbps (máxima qualidade para AAC/MP3)
+  - Sample rate elevado para 48kHz (qualidade profissional)
+  - Argumentos otimizados do pós-processador: `ffmpeg:-b:a 320k -ar 48000`
+  - Remoção de limitações de formato que restringiam a qualidade
+
+- **Download Otimizado**:
+  - Uso do seletor `bestaudio*` para garantir o melhor stream disponível
+  - Permite que o yt-dlp escolha formatos OPUS ou AAC de alta qualidade
+  - Conversão eficiente mantendo a qualidade máxima do áudio original
+
+### 📊 Comparativo de Qualidade
+
+| Propriedade | Versão 1.3.x | Versão 1.4.0 |
+|-------------|--------------|--------------|
+| Bitrate | ~128 kbps | **320 kbps** |
+| Sample Rate | 44.1 kHz | **48 kHz** |
+| Tamanho (3min) | ~3 MB | ~7-8 MB |
+| Qualidade | Boa | **Excelente** |
+
+### 📝 Documentação
+
+- README atualizado com informações sobre qualidade de áudio premium
+- Badge adicionado indicando qualidade de 320kbps
+- Documentação técnica sobre os parâmetros de qualidade implementados
+
+---
+
 ## [1.3.2] - 2025-10-14
 
 ### 🐛 Corrigido

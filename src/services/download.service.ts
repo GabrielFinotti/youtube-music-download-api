@@ -43,7 +43,9 @@ class DownloadService {
   private async cleanupTempDir(dirPath: string): Promise<void> {
     try {
       this.logger.info({ dir: dirPath }, 'Limpando diretório temporário');
+
       await fs.rm(dirPath, { recursive: true, force: true });
+
       this.logger.debug('Diretório temporário removido com sucesso');
     } catch (error) {
       this.logger.error(
@@ -82,6 +84,7 @@ class DownloadService {
 
       if (!this.validateYouTubeUrl(url)) {
         this.logger.warn({ url }, 'URL do YouTube inválida');
+
         throw new Error('URL do YouTube inválida');
       }
 
@@ -100,13 +103,15 @@ class DownloadService {
       tempDir = await this.createTempDir();
       this.logger.info({ dir: tempDir }, 'Diretório temporário criado');
 
-      const outputTemplate = path.join(tempDir, '%(title)s.%(ext)s');
+      const tempFilename = `ytune-${randomUUID()}`;
+      const outputTemplate = path.join(tempDir, `${tempFilename}.%(ext)s`);
       const options = {
         output: outputTemplate,
-        format: 'bestaudio/best',
+        format: 'bestaudio*',
         extractAudio: true,
-        audioFormat: 'mp3',
+        audioFormat: 'm4a',
         audioQuality: 0,
+        postprocessorArgs: 'ffmpeg:-b:a 320k -ar 48000',
         embedThumbnail: true,
         addMetadata: true,
         ffmpegLocation: this._ffmpegPath,
@@ -114,27 +119,31 @@ class DownloadService {
       };
 
       this.logger.info('Obtendo metadados do vídeo...');
-      const info: any = await youtubedl(cleanUrl, {
+
+      const info = await youtubedl(cleanUrl, {
         dumpSingleJson: true,
         noWarnings: true,
         noCheckCertificates: true,
         preferFreeFormats: true,
       });
 
+      if (typeof info === 'string')
+        throw new Error('Erro ao obter metadados do vídeo');
+
       this.logger.info(
         { title: info.title, duration: info.duration },
         'Metadados obtidos'
       );
-      this.logger.info('Iniciando download e conversão para MP3...');
+      this.logger.info('Iniciando download e conversão para M4A AAC...');
 
       await youtubedl(cleanUrl, options);
 
       this.logger.info('Download e conversão concluídos');
 
-      const filename = `${this.sanitizeFilename(info.title)}.mp3`;
-      const filepath = path.join(tempDir, filename);
+      const filename = `${this.sanitizeFilename(info.title)}.m4a`;
+      const filepath = path.join(tempDir, `${tempFilename}.m4a`);
 
-      this.logger.debug({ filename }, 'Lendo arquivo');
+      this.logger.debug({ tempFile: tempFilename, filename }, 'Lendo arquivo');
       const buffer = await fs.readFile(filepath);
       const stats = await fs.stat(filepath);
 

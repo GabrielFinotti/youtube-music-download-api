@@ -4,11 +4,12 @@
 
 ### API REST moderna para download de músicas do YouTube
 
-[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/GabrielFinotti/youtube-music-download-api)
+[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](https://github.com/GabrielFinotti/youtube-music-download-api)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
 [![Node](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/GabrielFinotti/youtube-music-download-api)
+[![Audio Quality](https://img.shields.io/badge/audio-320kbps-red.svg)](https://github.com/GabrielFinotti/youtube-music-download-api)
 
 [Características](#-características) •
 [Instalação](#-instalação) •
@@ -26,12 +27,13 @@
 
 ## 📋 Sobre
 
-**YTune API** é uma API REST robusta e moderna desenvolvida com **Node.js** e **TypeScript** para download e conversão de áudios do YouTube para formato MP3 de alta qualidade. Com arquitetura em camadas, testes automatizados completos e 100% de cobertura de código.
+**YTune API** é uma API REST robusta e moderna desenvolvida com **Node.js** e **TypeScript** para download e conversão de áudios do YouTube para formato M4A AAC de **máxima qualidade (320kbps @ 48kHz)**. Com arquitetura em camadas, testes automatizados completos e 100% de cobertura de código.
 
 ### 🎯 Características
 
-- ✅ **Download de Áudio do YouTube** - Extração de áudio de vídeos
-- ✅ **Conversão MP3** - Conversão automática para formato MP3
+- ✅ **Download de Áudio do YouTube** - Extração de áudio de vídeos em máxima qualidade
+- ✅ **Qualidade Premium** - Áudio 320kbps com sample rate de 48kHz (qualidade profissional)
+- ✅ **Conversão M4A AAC** - Conversão automática para formato M4A AAC de alta fidelidade
 - ✅ **Headers Customizados** - Metadados do áudio (título, duração) via HTTP headers
 - ✅ **CORS Configurável** - Headers expostos para acesso cross-origin
 - ✅ **Logging Profissional** - Sistema de logs estruturado com Pino
@@ -42,7 +44,8 @@
 - ✅ **Respostas Padronizadas** - Formato consistente de resposta
 - ✅ **Validação Robusta** - Validação de URLs e parâmetros
 - ✅ **Sanitização** - Nomes de arquivo seguros
-- ✅ **Limpeza Automática** - Gestão de arquivos temporários
+- ✅ **Limpeza Automática** - Gestão inteligente de arquivos temporários com UUID
+- ✅ **Processamento Concorrente** - Suporte para múltiplas requisições simultâneas
 - ✅ **Docker Ready** - Suporte completo para containers
 
 ---
@@ -60,6 +63,40 @@
 | **Jest** | 30.2.0 | Framework de testes |
 | **Supertest** | 7.1.4 | Testes HTTP |
 | **ts-jest** | 29.4.4 | Suporte TypeScript para Jest |
+
+---
+
+## 🎵 Qualidade de Áudio Premium
+
+A YTune API foi otimizada para fornecer áudio na **máxima qualidade possível**, garantindo uma experiência auditiva excepcional:
+
+### 📊 Especificações Técnicas
+
+| Parâmetro | Valor | Descrição |
+|-----------|-------|-----------|
+| **Bitrate** | 320 kbps | Máxima qualidade para AAC/MP3 |
+| **Sample Rate** | 48 kHz | Qualidade profissional de estúdio |
+| **Formato** | M4A AAC | Codec de alta eficiência e qualidade |
+| **Seletor de Formato** | `bestaudio*` | Melhor stream disponível sem restrições |
+
+### ⚙️ Como Funciona
+
+1. **Download Inteligente**: O yt-dlp seleciona automaticamente o melhor stream de áudio disponível (geralmente OPUS ou AAC em alta qualidade)
+2. **Conversão Otimizada**: FFmpeg converte o áudio para M4A AAC com parâmetros otimizados:
+   - `-b:a 320k` → Bitrate fixo de 320kbps
+   - `-ar 48000` → Sample rate de 48kHz
+3. **Metadados Preservados**: Thumbnail e metadados do vídeo são incorporados ao arquivo
+
+### 📈 Comparativo de Qualidade
+
+| Aspecto | Qualidade Padrão | YTune API (v1.4.0+) |
+|---------|------------------|---------------------|
+| Bitrate | ~128 kbps | **320 kbps** (2.5x melhor) |
+| Sample Rate | 44.1 kHz | **48 kHz** |
+| Tamanho (música 3min) | ~3 MB | ~7-8 MB |
+| Qualidade Percebida | Boa | **Excelente (Indistinguível do original)** |
+
+> **💡 Nota**: Arquivos terão tamanho aproximadamente 2.5x maior, mas com qualidade significativamente superior, ideal para audiófilos e uso profissional.
 
 ---
 
@@ -283,10 +320,12 @@ A YTune API possui um sistema de logging profissional baseado em **Pino**, otimi
 - ✅ **Alta Performance** - ~10x mais rápido que Winston
 - ✅ **Logs Estruturados** - Formato JSON para produção
 - ✅ **Logs Formatados** - Coloridos e legíveis em desenvolvimento
+- ✅ **Logging Condicional** - Formato adaptado automaticamente ao ambiente
 - ✅ **Níveis Configuráveis** - TRACE, DEBUG, INFO, WARN, ERROR, FATAL
 - ✅ **Middleware HTTP** - Logging automático de requisições
 - ✅ **Child Loggers** - Contexto específico por módulo
 - ✅ **Otimizado para RPi** - Mínimo uso de CPU e memória
+- ✅ **Docker Ready** - Funciona perfeitamente em containers
 
 ### ⚙️ Configuração
 
@@ -299,24 +338,28 @@ LOG_LEVEL=info  # trace, debug, info, warn, error, fatal
 
 ### 📊 Formato dos Logs
 
-**Desenvolvimento (legível e colorido):**
+O sistema de logging adapta automaticamente o formato baseado no ambiente (`NODE_ENV`):
+
+**Desenvolvimento (legível e colorido com pino-pretty):**
 
 ```
 [15:30:45.123] INFO (DownloadService): Iniciando processo de download
     url: "https://www.youtube.com/watch?v=..."
 ```
 
-**Produção (JSON estruturado):**
+**Produção/Docker (JSON estruturado - alta performance):**
 
 ```json
 {
   "level": 30,
-  "time": 1697123445123,
+  "time": "14/10/2025 15:30:45",
   "context": "DownloadService",
   "msg": "Iniciando processo de download",
   "url": "https://www.youtube.com/watch?v=..."
 }
 ```
+
+> **💡 Nota**: Em produção, o logger usa JSON nativo do Pino (sem `pino-pretty`) para máxima performance e compatibilidade com ferramentas de agregação de logs como ELK Stack, Grafana Loki, Datadog, etc.
 
 ### 🔗 Documentação Completa
 

@@ -37,7 +37,7 @@ class DownloadController {
         'Download concluído com sucesso'
       );
 
-      res.setHeader('Content-Type', 'audio/mpeg');
+      res.setHeader('Content-Type', 'audio/mp4');
       res.setHeader(
         'Content-Disposition',
         `attachment; filename="${encodeURIComponent(result.filename)}"`

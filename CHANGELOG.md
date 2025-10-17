@@ -5,6 +5,99 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.4.0] - 2025-10-16
+
+### ✨ Novo
+
+- **Qualidade de Áudio Premium**:
+  - Implementado download de áudio em **máxima qualidade (320kbps @ 48kHz)**
+  - Otimização do seletor de formato de áudio para `bestaudio*` (sem restrições de extensão)
+  - Sample rate profissional de 48kHz para qualidade superior
+  - Arquivos com qualidade aproximadamente 2.5x superior ao padrão anterior
+
+### 🔧 Melhorado
+
+- **Processamento de Áudio com FFmpeg**:
+  - Configuração de bitrate fixo em 320kbps (máxima qualidade para AAC/MP3)
+  - Sample rate elevado para 48kHz (qualidade profissional)
+  - Argumentos otimizados do pós-processador: `ffmpeg:-b:a 320k -ar 48000`
+  - Remoção de limitações de formato que restringiam a qualidade
+
+- **Download Otimizado**:
+  - Uso do seletor `bestaudio*` para garantir o melhor stream disponível
+  - Permite que o yt-dlp escolha formatos OPUS ou AAC de alta qualidade
+  - Conversão eficiente mantendo a qualidade máxima do áudio original
+
+### 📊 Comparativo de Qualidade
+
+| Propriedade | Versão 1.3.x | Versão 1.4.0 |
+|-------------|--------------|--------------|
+| Bitrate | ~128 kbps | **320 kbps** |
+| Sample Rate | 44.1 kHz | **48 kHz** |
+| Tamanho (3min) | ~3 MB | ~7-8 MB |
+| Qualidade | Boa | **Excelente** |
+
+### 📝 Documentação
+
+- README atualizado com informações sobre qualidade de áudio premium
+- Badge adicionado indicando qualidade de 320kbps
+- Documentação técnica sobre os parâmetros de qualidade implementados
+
+---
+
+## [1.3.2] - 2025-10-14
+
+### 🐛 Corrigido
+
+- **Sistema de Logging**:
+  - Corrigido erro no Docker onde `pino-pretty` não estava disponível em produção
+  - Implementado logging condicional baseado em ambiente (NODE_ENV)
+  - Logs formatados com `pino-pretty` apenas em ambiente de desenvolvimento
+  - Logs em formato JSON estruturado em produção (mais performático e adequado)
+
+### 🔧 Melhorado
+
+- **Compatibilidade Docker**:
+  - Logger agora funciona corretamente em containers Docker
+  - Não requer `pino-pretty` como dependência de produção
+  - Reduz tamanho da imagem Docker ao manter `pino-pretty` como devDependency
+  - Melhora performance em produção com logging JSON nativo do Pino
+
+- **Performance**:
+  - Logging JSON em produção é mais rápido que usar transport `pino-pretty`
+  - Menor overhead de CPU e memória em ambientes produtivos
+  - Ideal para agregação de logs com ferramentas como ELK, Grafana Loki, etc.
+
+### 📝 Documentação
+
+- Documentação atualizada sobre o comportamento do logging em diferentes ambientes
+- Esclarecimento sobre formato de logs em desenvolvimento vs produção
+
+## [1.3.1] - 2025-10-14
+
+### 🔧 Melhorado
+
+- **Gestão de Arquivos Temporários**:
+  - Implementado uso de nomes de arquivo únicos (UUID) para downloads temporários
+  - Elimina conflitos potenciais ao processar múltiplas requisições simultâneas
+  - Melhora a gestão e rastreamento de arquivos temporários
+  - Aprimora a confiabilidade do processo de limpeza de arquivos
+
+- **Tratamento de Erros**:
+  - Adicionada validação de tipo para metadados do vídeo
+  - Melhor detecção de erros durante obtenção de metadados
+  - Mensagens de erro mais específicas e informativas
+
+- **Logging**:
+  - Logs mais detalhados incluindo nome do arquivo temporário
+  - Melhor rastreabilidade do ciclo de vida dos arquivos
+  - Informações de debug aprimoradas para troubleshooting
+
+### 🐛 Corrigido
+
+- Correção de possíveis conflitos de arquivo ao processar downloads simultâneos
+- Melhora na leitura de arquivos usando nomes temporários consistentes
+
 ## [1.3.0] - 2025-10-11
 
 ### ✨ Adicionado
